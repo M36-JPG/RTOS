@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdint.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "freertos/semphr.h"
+#include "freertos/queue.h"
+#include "freertos/FreeRTOSConfig.h"
+
+#include "esp_random.h"
+
+
+#define butt1 12
+#define butt2 14
+#define buzzer 27
+
+ SemaphoreHandle_t xcarSem;
+
+void CarTask(void *pv){
+    int id = * (int *)pv;
+    while(1){
+        if(xSemaphoreTake(xcarSem , portMAX_DELAY)==pdTRUE) // semaphore take
+        {
+
+            printf("Car %d take order\n",id); // car in 
+
+            vTaskDelay(pdMS_TO_TICKS (6000)); // order
+
+              printf("Car %d left\n",id); // car out
+
+            xSemaphoreGive(xcarSem); // semaphore give
+
+             vTaskDelay(pdMS_TO_TICKS (1000)); // delay in the end of the while
+        }
+    }
+}
+
+
+
+
+
+void app_main() {
+    
+   xcarSem =xSemaphoreCreateCounting(3,3);
+    if(xcarSem == NULL){
+        printf("semaphore error");
+
+    }
+
+   // xTaskCreate(CarTask , "car1" , 3072 , 1 , 1 , NULL);
+     //xTaskCreate(CarTask , "car2" , 3072 , 2 , 1 , NULL);
+      xTaskCreate(CarTask , "car3" , 3072 , NULL , 1 , NULL);
+
+
+      // xTaskCreate(CarTask , "car4" , 3072 , 4 , 1 , NULL);
+       // xTaskCreate(CarTask , "car5" , 3072 , 5 , 1 , NULL);
+}
