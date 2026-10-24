@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "BIT_MATH.h"
+
+#define LED1 12
+#define LED2 14
+
+// void Task1_LED(void *pvParameters)
+// {
+//     gpio_reset_pin(LED1);
+//     gpio_set_direction(LED1, GPIO_MODE_OUTPUT);
+
+//     while (1)
+//     {
+//         gpio_set_level(LED1, 1);
+//         printf("LED1 ON\n");
+//         vTaskDelay(pdMS_TO_TICKS(1000));
+
+//         gpio_set_level(LED1, 0);
+//         printf("LED1 OFF\n");
+//         vTaskDelay(pdMS_TO_TICKS(1000));
+//     }
+// }
+
+// void Task2_LED(void *pvParameters)
+// {
+//     gpio_reset_pin(LED2);
+//     gpio_set_direction(LED2, GPIO_MODE_OUTPUT);
+
+//     while (1)
+//     {
+//         gpio_set_level(LED2, 1);
+//         printf("LED2 ON\n");
+//         vTaskDelay(pdMS_TO_TICKS(2000));
+
+//         gpio_set_level(LED2, 0);
+//         printf("LED2 OFF\n");
+//         vTaskDelay(pdMS_TO_TICKS(2000));
+//     }
+// }
+
+/*
+void Task1_LED(void *pvParameters)
+{
+    gpio_set_direction(LED1, GPIO_MODE_OUTPUT);
+
+    while (1)
+    {
+        gpio_set_level(LED1, !gpio_get_level(LED1));
+           printf("Led 1 \n");
+
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+void Task2_LED(void *pvParameters)
+{
+    gpio_set_direction(LED2, GPIO_MODE_OUTPUT);
+
+    while (1)
+    {
+        gpio_set_level(LED2, !gpio_get_level(LED2));
+        printf("Led 2\n");
+        vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+*/
+
+void LED_on1(void *pvParameter){
+
+    gpio_set_direction(LED1, GPIO_MODE_OUTPUT);
+    while(1){
+
+    gpio_set_level(LED1, 1);
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
+      gpio_set_level(LED1, 0);
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+
+void Led_on2(void *pvParameter){
+     gpio_set_direction(LED2, GPIO_MODE_OUTPUT);
+    while(1){
+
+    gpio_set_level(LED2, 1);
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    
+      gpio_set_level(LED2, 0);
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+
+
+
+void app_main(void)
+{
+   
+    xTaskCreate(LED_on1, "Task1", 2048, NULL, 1, NULL);
+    xTaskCreate(Led_on2, "Task2", 2048, NULL, 1, NULL);
+    printf("hi\n");
+}
+
+ 
