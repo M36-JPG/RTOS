@@ -1,0 +1,79 @@
+#define F_CPU 16000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include "BIT_MATH.h"
+#include "LCD.h"
+
+// Initialize ADC
+void ADC_Init(void)
+{
+	// AVCC as reference voltage
+	ADMUX = (1 << REFS0);
+
+	// Enable ADC
+	// Prescaler = 64
+	ADCSRA = (1 << ADEN) |
+	(1 << ADPS2) |
+	(1 << ADPS1);
+}
+
+// Read ADC Channel
+unsigned int ADC_Read(unsigned char channel)
+{
+	// Select ADC channel
+	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
+
+	// Start conversion
+	ADCSRA |= (1 << ADSC);
+
+	// Wait until conversion finishes
+	while (ADCSRA & (1 << ADSC));
+
+	return ADC;
+}
+
+int main(void)
+{
+	ADC_Init();
+	LCD_Init();
+	int chanellValue = ADC_Read(0);
+	SET_BIT(DDRB , 0);
+	SET_BIT(DDRB , 1);
+	SET_BIT(DDRB , 2);
+	CLR_BIT(DDRC , 0);
+	LCD_Number(chanellValue);
+	LCD_Clear();
+	
+	
+	while (1)
+	{
+		if(chanellValue <=300){
+			SET_BIT(PORTB , 0);
+			SET_BIT(PORTB , 1);
+			SET_BIT(PORTB , 2);
+		}
+		
+		else if(chanellValue>300 && chanellValue<=500){
+			SET_BIT(PORTB , 0);
+			SET_BIT(PORTB , 1);
+			CLR_BIT(PORTB , 2);
+		}
+		
+		else if(chanellValue >=500 &&chanellValue <700){
+SET_BIT(PORTB , 0);
+CLR_BIT(PORTB , 1);CLR_BIT(PORTB , 2);		}
+		
+		else{
+			CLR_BIT(PORTB , 0);
+			CLR_BIT(PORTB , 1);
+			CLR_BIT(PORTB , 2);
+		}
+		
+		
+	}
+	
+	
+	
+	
+}

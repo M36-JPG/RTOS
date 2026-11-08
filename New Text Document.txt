@@ -1,0 +1,46 @@
+#define F_CPU 16000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include "BIT_MATH.h"
+
+// Initialize ADC
+void ADC_Init(void)
+{
+	// AVCC as reference voltage
+	ADMUX = (1 << REFS0);
+
+	// Enable ADC
+	// Prescaler = 64
+	ADCSRA = (1 << ADEN) |
+	(1 << ADPS2) |
+	(1 << ADPS1);
+}
+
+// Read ADC Channel
+unsigned int ADC_Read(unsigned char channel)
+{
+	// Select ADC channel
+	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
+
+	// Start conversion
+	ADCSRA |= (1 << ADSC);
+
+	// Wait until conversion finishes
+	while (ADCSRA & (1 << ADSC));
+
+	return ADC;
+}
+
+int main(void)
+{
+
+
+	while (1)
+	{
+	}
+	
+	
+	
+	
+}
