@@ -1,0 +1,86 @@
+
+#define F_CPU 16000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include "BIT_MATH.h"
+#include "LCD.h"
+
+// Initialize ADC
+void ADC_Init(void)
+{
+	// AVCC as reference voltage
+	ADMUX = (1 << REFS0);
+
+	// Enable ADC
+	// Prescaler = 64
+	ADCSRA = (1 << ADEN) |
+	(1 << ADPS2) |
+	(1 << ADPS1);
+}
+
+// Read ADC Channel
+unsigned int ADC_Read(unsigned char channel)
+{
+	// Select ADC channel
+	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
+
+	// Start conversion
+	ADCSRA |= (1 << ADSC);
+
+	// Wait until conversion finishes
+	while (ADCSRA & (1 << ADSC));
+
+	return ADC;
+}
+
+int main(void)
+{
+	ADC_Init();
+	LCD_Init();
+
+	SET_BIT(DDRB, 0);
+	SET_BIT(DDRB, 1);
+	SET_BIT(DDRB, 2);
+
+	CLR_BIT(DDRC, 0);
+
+	while (1)
+	{
+		unsigned int channelValue = ADC_Read(0);
+
+		if (channelValue <= 300)
+		{
+			// Dark: 3 LEDs ON
+			SET_BIT(PORTB, 0);
+			SET_BIT(PORTB, 1);
+			SET_BIT(PORTB, 2);
+		}
+
+		else if (channelValue > 300 && channelValue <= 500)
+		{
+			// Medium light: 2 LEDs ON
+			SET_BIT(PORTB, 0);
+			SET_BIT(PORTB, 1);
+			CLR_BIT(PORTB, 2);
+		}
+
+		else if (channelValue > 500 && channelValue < 700)
+		{
+			// High light: 1 LED ON
+			SET_BIT(PORTB, 0);
+			CLR_BIT(PORTB, 1);
+			CLR_BIT(PORTB, 2);
+		}
+
+		else
+		{
+			// Very high light: All LEDs OFF
+			CLR_BIT(PORTB, 0);
+			CLR_BIT(PORTB, 1);
+			CLR_BIT(PORTB, 2);
+		}
+
+		_delay_ms(100);
+	}
+}
