@@ -1,0 +1,147 @@
+
+#define F_CPU 16000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include "BIT_MATH.h"
+#include "LCD.h"
+
+// Initialize ADC
+void ADC_Init(void)
+{
+	// AVCC as reference voltage
+	ADMUX = (1 << REFS0);
+
+	// Enable ADC
+	// Prescaler = 64
+	ADCSRA = (1 << ADEN) |
+	(1 << ADPS2) |
+	(1 << ADPS1);
+}
+
+// Read ADC Channel
+unsigned int ADC_Read(unsigned char channel)
+{
+	// Select ADC channel
+	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
+
+	// Start conversion
+	ADCSRA |= (1 << ADSC);
+
+	// Wait until conversion finishes
+	while (ADCSRA & (1 << ADSC));
+
+	return ADC;
+}
+
+int main(void)
+{
+	
+ //PROJECT 1
+// 	ADC_Init();
+ 	LCD_Init();
+// 	
+// 
+// 	SET_BIT(DDRB, 0);
+// 	SET_BIT(DDRB, 1);
+// 	SET_BIT(DDRB, 2);
+// 
+// 	CLR_BIT(DDRC, 0);
+
+
+
+//PROJECT 3
+// 	uint8_t data[5];
+// 	uint8_t humidity;
+// 	uint8_t temp;
+//     timer_init();
+
+	while (1)
+	{
+		
+
+		//PROJECT 1
+// 		unsigned int channelValue = ADC_Read(0);
+// 		LCD_String("Value: ");
+// 		LCD_Number(channelValue);
+// 		
+// 
+// 		if (channelValue <= 300)
+// 		{
+// 			
+// 			SET_BIT(PORTB, 0);
+// 			SET_BIT(PORTB, 1);
+// 			SET_BIT(PORTB, 2);
+// 		}
+// 
+// 		else if (channelValue > 300 && channelValue <= 500)
+// 		{
+// 			
+// 			SET_BIT(PORTB, 0);
+// 			SET_BIT(PORTB, 1);
+// 			CLR_BIT(PORTB, 2);
+// 		}
+// 
+// 		else if (channelValue > 500 && channelValue < 700)
+// 		{
+// 			
+// 			SET_BIT(PORTB, 0);
+// 			CLR_BIT(PORTB, 1);
+// 			CLR_BIT(PORTB, 2);
+// 		}
+// 
+// 		else
+// 		{
+// 			
+// 			CLR_BIT(PORTB, 0);
+// 			CLR_BIT(PORTB, 1);
+// 			CLR_BIT(PORTB, 2);
+// 		}
+// 
+// 		_delay_ms(100);
+// 		LCD_Clear();
+
+//PROJECT 2
+SET_BIT(DDRB, 0); //led
+SET_BIT(DDRB, 3); //buzzer
+CLR_BIT(DDRB , 7); // 0 , 1
+
+
+
+if(GET_BIT(PINB , 7)==1){
+	LCD_String("ENTER");
+
+	SET_BIT(PORTB, 0);
+	SET_BIT(PORTB, 3);
+}
+
+else{
+
+	CLR_BIT(PORTB, 0);
+    CLR_BIT(PORTB, 3);
+}
+		_delay_ms(100);
+ 		LCD_Clear();
+		 
+		 //PROJECT 3
+		 
+		 // 		if(read (data)){
+		 // 			humidity = data[0];
+		 // 			temp = data[2];
+		 //
+		 // 			LCD_String("humidity = ")
+		 // 			LCD_Number(humidity);
+		 // 			LCD_SetCursor(1 ,0);
+		 // 			LCD_String("Temp = ")
+		 // 			LCD_Number(temp);
+		 // 			_delay_ms(100);
+		 // 			LCD_Clear();
+		 //
+		 //
+		 // 		}
+		 //
+		 // 		else{
+		 //
+		 // 		}
+	}
+}
