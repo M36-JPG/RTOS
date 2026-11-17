@@ -1,0 +1,71 @@
+#define F_CPU 16000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdint.h>
+#include "LCD.h"
+#include "BIT_MATH.h"
+#include <avr/interrupt.h>
+
+#define IN1 PB0
+#define IN2 PB1
+#define IN3 PB2
+#define IN4 PB3
+#define ENA PB4
+#define ENB PB5
+
+#define DIP1 PC0
+#define DIP2 PC1
+#define DIP3 PC3
+
+int main(void)
+{
+	DDRB |= (1 << IN1) | (1 << IN2) | (1 << IN3) | (1 << IN4) | (1 << ENA) | (1 << ENB);
+	
+	DDRC &= ~((1 << DIP1) | (1 << DIP2) | (1 << DIP3));
+	PORTC |= (1 << DIP1) | (1 << DIP2) | (1 << DIP3);
+
+	SET_BIT(TCCR1A, WGM10);
+	SET_BIT(TCCR1B, WGM12);
+	
+	SET_BIT(TCCR1B, CS11);
+	
+	SET_BIT(PORTB, ENA);
+	SET_BIT(PORTB, ENB);
+	
+	int speed = 192;
+
+	while(1)
+	{
+		if(READ_BIT(PINC, DIP1) == 0)
+		{
+			SET_BIT(PORTB, IN1);
+			CLEAR_BIT(PORTB, IN2);
+			
+			SET_BIT(PORTB, IN3);
+			CLEAR_BIT(PORTB, IN4);
+		}
+		else if(READ_BIT(PINC, DIP2) == 0)
+		{
+			CLEAR_BIT(PORTB, IN1);
+			SET_BIT(PORTB, IN2);
+			
+			CLEAR_BIT(PORTB, IN3);
+			SET_BIT(PORTB, IN4);
+		}
+		else if(READ_BIT(PINC, DIP3) == 0)
+		{
+			CLEAR_BIT(PORTB, IN1);
+			CLEAR_BIT(PORTB, IN2);
+			CLEAR_BIT(PORTB, IN3);
+			CLEAR_BIT(PORTB, IN4);
+		}
+		else
+		{
+			CLEAR_BIT(PORTB, IN1);
+			CLEAR_BIT(PORTB, IN2);
+			CLEAR_BIT(PORTB, IN3);
+			CLEAR_BIT(PORTB, IN4);
+		}
+	}
+}
